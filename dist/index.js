@@ -23117,7 +23117,7 @@ async function extractJiraKeysFromCommit() {
             });
             const result = resultArr.join(',');
             core.setOutput("jira-keys", result);
-            core.setOutput("latest-jira-commit", result[result.length - 1]);
+            core.setOutput("latest-jira-commit", resultArr[resultArr.length - 1]);
         }
         else {
             console.log("not a pull request");
@@ -23141,7 +23141,7 @@ async function extractJiraKeysFromCommit() {
                 });
                 const result = resultArr.join(',');
                 core.setOutput("jira-keys", result);
-                core.setOutput("latest-jira-commit", result[result.length - 1]);
+                core.setOutput("latest-jira-commit", resultArr[resultArr.length - 1]);
             }
             else {
                 console.log("parse-all-commits input val is false");

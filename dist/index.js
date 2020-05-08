@@ -23101,6 +23101,7 @@ async function extractJiraKeysFromCommit() {
             });
             data.forEach((item) => {
                 const commit = item.commit;
+                console.log("Found this commit" + commit.message);
                 const matches = matchAll(commit.message, regex).toArray();
                 matches.forEach((match) => {
                     if (resultArr.find((element) => element == match)) {
@@ -23118,6 +23119,7 @@ async function extractJiraKeysFromCommit() {
         else {
             console.log("not a pull request");
             if (commitMessage) {
+                console.log("Have this commitmessage" + commitMessage);
                 console.log("commit-message input val provided...");
                 const matches = matchAll(commitMessage, regex).toArray();
                 const result = matches.join(',');
@@ -23130,6 +23132,7 @@ async function extractJiraKeysFromCommit() {
                     console.log("parse-all-commits input val is true");
                     let resultArr = [];
                     payload.commits.forEach((commit) => {
+                        console.log("found this second commit" + commit.message);
                         const matches = matchAll(commit.message, regex).toArray();
                         matches.forEach((match) => {
                             if (resultArr.find((element) => element == match)) {

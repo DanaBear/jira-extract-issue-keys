@@ -23099,6 +23099,7 @@ async function extractJiraKeysFromCommit() {
                 repo: repo,
                 pull_number: prNum
             });
+            console.log("data for each length " + data.length);
             data.forEach((item) => {
                 const commit = item.commit;
                 console.log("Found this commit" + commit.message);
@@ -23109,51 +23110,46 @@ async function extractJiraKeysFromCommit() {
                     }
                     else {
                         console.log(" adding " + match + " to result array");
+                        console.log(" setting latest tp " + match);
                         resultArr.push(match);
                     }
                 });
             });
             const result = resultArr.join(',');
             core.setOutput("jira-keys", result);
+            core.setOutput("latest-jira-commit", result[result.length - 1]);
         }
         else {
             console.log("not a pull request");
-            if (commitMessage) {
-                console.log("Have this commitmessage" + commitMessage);
-                console.log("commit-message input val provided...");
-                const matches = matchAll(commitMessage, regex).toArray();
-                const result = matches.join(',');
+            const payload = github.context.payload;
+            if (parseAllCommits) {
+                console.log("parse-all-commits input val is true");
+                let resultArr = [];
+                console.log("payload for commits length " + payload.commits.length);
+                payload.commits.forEach((commit) => {
+                    console.log("found this second commit" + commit.message);
+                    const matches = matchAll(commit.message, regex).toArray();
+                    matches.forEach((match) => {
+                        if (resultArr.find((element) => element == match)) {
+                            console.log(match + " is already included in result array");
+                        }
+                        else {
+                            console.log(" adding " + match + " to result array");
+                            resultArr.push(match);
+                        }
+                    });
+                });
+                const result = resultArr.join(',');
                 core.setOutput("jira-keys", result);
+                core.setOutput("latest-jira-commit", result[result.length - 1]);
             }
             else {
-                console.log("no commit-message input val provided...");
-                const payload = github.context.payload;
-                if (parseAllCommits) {
-                    console.log("parse-all-commits input val is true");
-                    let resultArr = [];
-                    payload.commits.forEach((commit) => {
-                        console.log("found this second commit" + commit.message);
-                        const matches = matchAll(commit.message, regex).toArray();
-                        matches.forEach((match) => {
-                            if (resultArr.find((element) => element == match)) {
-                                console.log(match + " is already included in result array");
-                            }
-                            else {
-                                console.log(" adding " + match + " to result array");
-                                resultArr.push(match);
-                            }
-                        });
-                    });
-                    const result = resultArr.join(',');
-                    core.setOutput("jira-keys", result);
-                }
-                else {
-                    console.log("parse-all-commits input val is false");
-                    console.log("head_commit: ", payload.head_commit);
-                    const matches = matchAll(payload.head_commit.message, regex).toArray();
-                    const result = matches.join(',');
-                    core.setOutput("jira-keys", result);
-                }
+                console.log("parse-all-commits input val is false");
+                console.log("head_commit: ", payload.head_commit);
+                const matches = matchAll(payload.head_commit.message, regex).toArray();
+                const result = matches.join(',');
+                core.setOutput("jira-keys", result);
+                core.setOutput("latest-jira-commit", matches[matches.length - 1]);
             }
         }
     }

@@ -18,4 +18,4 @@ outputs:
     description: 'Jira keys that were found in input string(commit-message) in commad delimited format'
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'dist/index.js'
